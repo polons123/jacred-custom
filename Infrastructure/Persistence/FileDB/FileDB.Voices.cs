@@ -10,9 +10,22 @@ namespace JacRed.Infrastructure.Persistence
     public partial class FileDB
     {
         // An explicit dubbing credit distinguishes the studio from words in a movie title.
-        static readonly Regex spacedNewStudioCredit = new(
-            @"(?<![\w])(?:MVO|МВО|ПМ|DUB|дубляж)\s*[(\[]\s*New Studio\s*[)\]]",
-            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        const string StudioAlias = @"(?<studio>New\s*Studio|КВК|РХС|R\.H\.S|Алексфильм)";
+        const string AudioSuffix = @"(?:rus|ru|рус|ac3|aac|eac3|dts|[257]\.1|2\.0)";
+        const RegexOptions CreditOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
+        static readonly Regex StudioCredit = new(
+            @"(?<!\w)(?:MVO|МВО|ПМ|DUB|дубляж)\s*(?:\(\s*" + StudioAlias + @"\s*\)|\[\s*" +
+            StudioAlias + @"\s*\]|[-–—]\s*" + StudioAlias + @"(?![\w.]))", CreditOptions);
+        static readonly Regex AudioStudioLabel = new(
+            @"\A\s*" + StudioAlias + @"(?:\s+" + AudioSuffix + @"|\s*\(\s*" + AudioSuffix + @"\s*\))*\s*\z", CreditOptions);
+
+        static string CreditName(Match match) => match.Groups["studio"].Value.ToLowerInvariant() switch
+        {
+            "квк" => "Кубик в Кубе",
+            "рхс" or "r.h.s" => "Red Head Sound",
+            "алексфильм" => "AlexFilm",
+            _ => "NewStudio"
+        };
 
         /// <summary>
         /// Voice names in a release title or an audio track title, in the order they appear.
@@ -27,25 +40,13 @@ namespace JacRed.Infrastructure.Persistence
             if (string.IsNullOrWhiteSpace(text))
                 yield break;
 
-            if (isTitle && spacedNewStudioCredit.IsMatch(text))
-                yield return ("NewStudio", true);
+            foreach (Match credit in StudioCredit.Matches(text))
+                yield return (CreditName(credit), true);
 
-            // IndexBridge aliases used only when the entire audio track label names the studio.
-            if (!isTitle)
+            if (!isTitle && AudioStudioLabel.Match(text) is { Success: true } label)
             {
-                string studio = text.Trim().ToLowerInvariant() switch
-                {
-                    "new studio" => "NewStudio",
-                    "квк" => "Кубик в Кубе",
-                    "рхс" or "r.h.s" => "Red Head Sound",
-                    "алексфильм" => "AlexFilm",
-                    _ => null
-                };
-                if (studio != null)
-                {
-                    yield return (studio, true);
-                    yield break;
-                }
+                yield return (CreditName(label), true);
+                yield break;
             }
 
             // some titles write "й" as "и" + U+0306

@@ -410,13 +410,46 @@ public class FileDBVoicesTests : IDisposable
     [InlineData("MVO | Робота голосом", "Робота Голосом", "ukr")]
     [InlineData("MVO | 15K3 для MGG", "15КЗ", "ukr")]
     [InlineData("MVO | Інтер-фільм", "Інтер-фільм", "rus")]
-    public void UpdateFullDetails_NewStudio_IsDetectedWithItsLanguage(string track, string name, string language)
+    public void UpdateFullDetails_Studio_IsDetectedWithItsLanguage(string track, string name, string language)
     {
         var t = UpdateWithTracks(track);
 
         Assert.Contains(name, t.voices);
         Assert.Equivalent(new[] { language }, t.languages, strict: true);
     }
+
+    [Theory]
+    [InlineData("MVO (New  Studio)", "NewStudio")]
+    [InlineData("МВО [КВК]", "Кубик в Кубе")]
+    [InlineData("дубляж – РХС", "Red Head Sound")]
+    [InlineData("DUB [R.H.S]", "Red Head Sound")]
+    [InlineData("ПМ (Алексфильм)", "AlexFilm")]
+    public void ExplicitCreditSuppliesStudioAndLanguage(string credit, string studio)
+    {
+        foreach (var release in new[] { UpdateWithTracks(credit), Update("Film [2020] " + credit) })
+        {
+            Assert.Contains(studio, release.voices);
+            Assert.Contains("rus", release.languages);
+        }
+    }
+
+    [Theory]
+    [InlineData("New Studio (rus)", "NewStudio")]
+    [InlineData("КВК 5.1 AC3", "Кубик в Кубе")]
+    public void AudioLabelWithTechnicalSuffixSuppliesRussianStudio(string label, string studio)
+    {
+        var release = UpdateWithTracks(label);
+        Assert.Contains(studio, release.voices);
+        Assert.Contains("rus", release.languages);
+    }
+
+    [Theory]
+    [InlineData("Original (New Studio)")]
+    [InlineData("New Studio (documentary)")]
+    [InlineData("AMVO (New Studio)")]
+    [InlineData("MVO - New Studios")]
+    public void UncreditedWordsDoNotSupplySpacedStudio(string label)
+        => Assert.DoesNotContain("NewStudio", UpdateWithTracks(label).voices);
 
     [Fact]
     public void UpdateFullDetails_StudioOfBothLanguages_GivesNoLanguage()
