@@ -22,6 +22,24 @@ namespace JacRed.Infrastructure.Persistence
             if (string.IsNullOrWhiteSpace(text))
                 yield break;
 
+            // IndexBridge aliases used only when the entire audio track label names the studio.
+            if (!isTitle)
+            {
+                string studio = text.Trim().ToLowerInvariant() switch
+                {
+                    "new studio" => "NewStudio",
+                    "квк" => "Кубик в Кубе",
+                    "рхс" or "r.h.s" => "Red Head Sound",
+                    "алексфильм" => "AlexFilm",
+                    _ => null
+                };
+                if (studio != null)
+                {
+                    yield return (studio, true);
+                    yield break;
+                }
+            }
+
             // some titles write "й" as "и" + U+0306
             text = text.Normalize(NormalizationForm.FormC);
 

@@ -39,6 +39,19 @@ public class FileDBVoicesTests : IDisposable
     }
 
     [Theory]
+    [InlineData(" New Studio ", "NewStudio")]
+    [InlineData("КВК", "Кубик в Кубе")]
+    [InlineData("РХС", "Red Head Sound")]
+    [InlineData("R.H.S", "Red Head Sound")]
+    [InlineData("Алексфильм", "AlexFilm")]
+    public void ExactAudioStudioAliasIsNotAMovieTitle(string alias, string studio)
+    {
+        Assert.Contains((studio, true), FileDB.MatchVoices(alias, isTitle: false));
+        Assert.DoesNotContain((studio, true), FileDB.MatchVoices(alias, isTitle: true));
+        Assert.DoesNotContain((studio, true), FileDB.MatchVoices("Original " + alias, isTitle: false));
+    }
+
+    [Theory]
     [InlineData("Интерстеллар / Interstellar (2014) BDRip 1080p")]
     [InlineData("Интерны / Сезон: 1 / Серии: 1-20 из 20 [2010, комедия, HDTVRip]")]
     [InlineData("Люди в черном: Интернэшнл / Men in Black International (2019) WEB-DLRip")]
