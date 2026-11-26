@@ -1,0 +1,15 @@
+[Unit]
+Description=Revisit changed JacRed release titles
+
+[Service]
+Type=oneshot
+User=jacred
+Group=jacred
+UMask=0027
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+ExecStart=/usr/bin/python3 -u /opt/jacred-release-tags/20261126/scan.py /opt/jacred/Data /opt/jacred/Data/release-tags --refresh
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/opt/jacred/Data/release-tags

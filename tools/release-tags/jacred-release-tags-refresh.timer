@@ -1,0 +1,7 @@
+[Unit]
+Description=Catch up on changed JacRed shards
+[Timer]
+OnCalendar=*-*-* 02:17:00 UTC
+Persistent=true
+[Install]
+WantedBy=timers.target

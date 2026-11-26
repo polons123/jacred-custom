@@ -4,6 +4,8 @@ namespace JacRed.Models.Api
 {
     public class TorrentInfo
     {
+        public System.Text.Json.JsonElement? releaseTags { get; set; }
+
         public int quality { get; set; }
 
         public string videotype { get; set; }

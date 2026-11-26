@@ -134,6 +134,7 @@ namespace JacRed.Infrastructure.Persistence
                 if (torrent.title != t.title)
                 {
                     t.title = torrent.title;
+                    JacRed.Application.Search.ReleaseTitleTags.Record(t.title);
                     upt(true);
                 }
 
@@ -322,6 +323,7 @@ namespace JacRed.Infrastructure.Persistence
                     AppendFdbLog(torrent, t);
 
                 Database.TryAdd(t.url, t);
+                JacRed.Application.Search.ReleaseTitleTags.Record(t.title);
                 AddOrUpdateMasterDb(t);
 
                 // Drop legacy bare episode/movie URL once a #quality row is stored.

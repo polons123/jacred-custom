@@ -1,0 +1,54 @@
+{
+  "name": "@aiostreams/release-parser",
+  "version": "1.0.1",
+  "description": "A TypeScript library for parsing torrent titles",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AIOStreams/release-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AIOStreams/release-parser/issues"
+  },
+  "homepage": "https://github.com/AIOStreams/release-parser#readme",
+  "keywords": [
+    "torrent",
+    "parser",
+    "title",
+    "typescript",
+    "esm"
+  ],
+  "author": "Viren070",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^30.2.0",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "format": "prettier --write ./src/**/*.ts ./package.json"
+  }
+}

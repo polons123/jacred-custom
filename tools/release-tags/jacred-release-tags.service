@@ -1,0 +1,22 @@
+[Unit]
+Description=JacRed release title metadata
+After=local-fs.target
+
+[Service]
+User=jacred
+Group=jacred
+RuntimeDirectory=jacred-release-tags
+RuntimeDirectoryMode=0750
+UMask=0027
+WorkingDirectory=/opt/jacred-release-tags/20261126
+ExecStart=/opt/jacred-release-tags/20261126/node /opt/jacred-release-tags/20261126/service.mjs /opt/jacred/Data/release-tags/tags.sqlite /run/jacred-release-tags/titles.sock
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/jacred/Data/release-tags
+RestrictAddressFamilies=AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

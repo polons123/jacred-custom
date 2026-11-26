@@ -38,6 +38,7 @@ namespace JacRed.Controllers
             };
 
             var results = await _searchService.SearchAsync(request, memoryCache);
+            results = await ReleaseTitleTags.Enrich(results, HttpContext.RequestAborted);
             return Json(new RootObject() { Results = results });
         }
         #endregion
