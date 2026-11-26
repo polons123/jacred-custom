@@ -39,6 +39,12 @@ public class FileDBVoicesTests : IDisposable
     }
 
     [Theory]
+    [InlineData("Фильм [2022] MVO (New Studio) + Original Eng")]
+    [InlineData("Daredevil / 2018 / ПМ (New Studio) / 4K")]
+    public void ExplicitStudioCreditInReleaseTitle(string title)
+        => Assert.Contains(("NewStudio", true), FileDB.MatchVoices(title, isTitle: true));
+
+    [Theory]
     [InlineData(" New Studio ", "NewStudio")]
     [InlineData("КВК", "Кубик в Кубе")]
     [InlineData("РХС", "Red Head Sound")]

@@ -9,6 +9,11 @@ namespace JacRed.Infrastructure.Persistence
 {
     public partial class FileDB
     {
+        // An explicit dubbing credit distinguishes the studio from words in a movie title.
+        static readonly Regex spacedNewStudioCredit = new(
+            @"(?<![\w])(?:MVO|МВО|ПМ|DUB|дубляж)\s*[(\[]\s*New Studio\s*[)\]]",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
         /// <summary>
         /// Voice names in a release title or an audio track title, in the order they appear.
         /// Words of the title are compared with the voice dictionary (allVoices plus the lists below), the longest
@@ -21,6 +26,9 @@ namespace JacRed.Infrastructure.Persistence
         {
             if (string.IsNullOrWhiteSpace(text))
                 yield break;
+
+            if (isTitle && spacedNewStudioCredit.IsMatch(text))
+                yield return ("NewStudio", true);
 
             // IndexBridge aliases used only when the entire audio track label names the studio.
             if (!isTitle)
